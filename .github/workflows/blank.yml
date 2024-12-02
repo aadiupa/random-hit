@@ -30,7 +30,8 @@ jobs:
         JSON_CONTENT=$(cat ${{ env.file_path }})
         echo "JSON Content: $JSON_CONTENT"
         # Extract variables from JSON using jq
-        EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.inputs.ec2_name')
+        EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.ec2_name')
+        echo "$EC2_NAME"
         if [ -z "$EC2_NAME" ]; then
           echo "EC2 name is missing in the JSON file!"
           exit 1
