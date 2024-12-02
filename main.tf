@@ -18,10 +18,8 @@ provider "aws" {
 }
 
 locals {
-  instance_size = var.instance_size == "small" ? "t2.micro" : 
-                  var.instance_size == "medium" ? "t3.medium" : 
-                  var.instance_size == "large" ? "c5.xlarge" : 
-                  ""
+  instance_size = var.instance_size == "small" ? "t2.micro" : ""
+        
 }
 
 module "ec2_instance" {
