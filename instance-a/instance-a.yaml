@@ -1,0 +1,7 @@
+{
+  "time": "2024-12-02T10:30:00Z",
+  "ec2_name": "example-ec2-instance",
+  "idp_group_name": "admin-group",
+  "cloud_provider": "AWS",
+  "instance_size": "medium"
+}
