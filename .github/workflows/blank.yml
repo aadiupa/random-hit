@@ -39,13 +39,16 @@ jobs:
         terraform_version: 1.5.0
 
     - name: Terraform Init
-      run: terraform init -backend-config="ec2/${{ env.ec2_name }}/terraform.tfstate"
+      run: |
+        JSON_CONTENT=$(cat ${{ env.file_path }})
+        echo "JSON Content: $JSON_CONTENT"
+        EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.ec2_name')
+        terraform init -backend-config="ec2/$EC2_NAME/terraform.tfstate"
 
     - name: Terraform Apply
       run: |
         JSON_CONTENT=$(cat ${{ env.file_path }})
         echo "JSON Content: $JSON_CONTENT"
-        # Extract variables from JSON using jq
         EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.ec2_name')
         INSTANCE_SIZE=$(echo "$JSON_CONTENT" | jq -r '.instance_size')
         terraform apply -auto-approve -var "ec2_name=$EC2_NAME" -var  "instance_type=$INSTANCE_SIZE"
