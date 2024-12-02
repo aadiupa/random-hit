@@ -9,7 +9,7 @@ terraform {
   backend "s3" {
     bucket = "random-hit5"
     region = "ca-central-1"
-    dynamodb_table = "demo-table"
+   # dynamodb_table = "demo-table"
   }
 }
 
