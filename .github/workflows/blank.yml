@@ -55,4 +55,4 @@ jobs:
         echo "JSON Content: $JSON_CONTENT"
         EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.ec2_name')
         INSTANCE_SIZE=$(echo "$JSON_CONTENT" | jq -r '.instance_size')
-        terraform apply -auto-approve -var "ec2_name=$EC2_NAME" -var  "instance_type=$INSTANCE_SIZE"
+        terraform apply -auto-approve -var "instance_name=$EC2_NAME" -var  "instance_size=$INSTANCE_SIZE"
