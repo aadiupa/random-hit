@@ -43,7 +43,7 @@ jobs:
         JSON_CONTENT=$(cat ${{ env.file_path }})
         echo "JSON Content: $JSON_CONTENT"
         EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.ec2_name')
-        terraform init -backend-config="ec2/$EC2_NAME/terraform.tfstate"
+        terraform init -backend-config="key=ec2/$EC2_NAME/terraform.tfstate"
 
     - name: Terraform Apply
       run: |
