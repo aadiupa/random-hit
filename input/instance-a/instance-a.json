@@ -3,5 +3,5 @@
   "ec2_name": "example-ec2-instance",
   "idp_group_name": "admin-group",
   "cloud_provider": "AWS",
-  "instance_size": "medium"
+  "instance_size": "small"
 }
