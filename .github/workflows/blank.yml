@@ -1,0 +1,50 @@
+name: Create EC2 Instance
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-ec2:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Find latest JSON file
+      id: find_latest_file
+      run: |
+        # Find the latest file in the input folder
+        LATEST_FILE=$(find input -type f -name "*.json" -printf "%T@ %p\n" | sort -nr | head -1 | cut -d' ' -f2)
+        if [ -z "$LATEST_FILE" ]; then
+          echo "No JSON file found in the input folder!"
+          exit 1
+        fi
+        echo "file_path=$LATEST_FILE" >> $GITHUB_ENV
+
+    - name: Read JSON from latest file
+      id: read_json
+      run: |
+        JSON_CONTENT=$(cat ${{ env.file_path }})
+        echo "JSON Content: $JSON_CONTENT"
+        # Extract variables from JSON using jq
+        EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.inputs.ec2_name')
+        if [ -z "$EC2_NAME" ]; then
+          echo "EC2 name is missing in the JSON file!"
+          exit 1
+        fi
+        echo "ec2_name=$EC2_NAME" >> $GITHUB_ENV
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Apply
+      run: |
+        terraform apply -auto-approve -var "ec2_name=${{ env.ec2_name }}"
