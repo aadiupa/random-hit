@@ -7,12 +7,8 @@ on:
 
 jobs:
   create-ec2:
-    environment: prod
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -21,7 +17,7 @@ jobs:
       id: find_latest_file
       run: |
         # Find the latest file in the input folder
-        LATEST_FILE=$(find input -type f -name "*.json" -printf "%T@ %p\n" | sort -nr | head -1 | cut -d' ' -f2)
+        LATEST_FILE=$(find input/instance-a -type f -name "*.json" -printf "%T@ %p\n" | sort -nr | head -1 | cut -d' ' -f2)
         if [ -z "$LATEST_FILE" ]; then
           echo "No JSON file found in the input folder!"
           exit 1
@@ -35,12 +31,7 @@ jobs:
         echo "JSON Content: $JSON_CONTENT"
         # Extract variables from JSON using jq
         EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.ec2_name')
-        echo "$EC2_NAME"
-        if [ -z "$EC2_NAME" ]; then
-          echo "EC2 name is missing in the JSON file!"
-          exit 1
-        fi
-        echo "ec2_name=$EC2_NAME" >> $GITHUB_ENV
+        INSTANCE_SIZE=$(echo "$JSON_CONTENT" | jq -r '.instance_size')
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
@@ -52,4 +43,9 @@ jobs:
 
     - name: Terraform Apply
       run: |
-        terraform apply -auto-approve -var "ec2_name=${{ env.ec2_name }}"
+        JSON_CONTENT=$(cat ${{ env.file_path }})
+        echo "JSON Content: $JSON_CONTENT"
+        # Extract variables from JSON using jq
+        EC2_NAME=$(echo "$JSON_CONTENT" | jq -r '.ec2_name')
+        INSTANCE_SIZE=$(echo "$JSON_CONTENT" | jq -r '.instance_size')
+        echo "terraform apply -auto-approve -var "ec2_name=${{ $EC2_NAME }}" -var  "instance_type=${{ $INSTANCE_SIZE }}""
